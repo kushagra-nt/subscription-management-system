@@ -5,14 +5,14 @@ import axios from 'axios';
 import Link from 'next/link'
 import React, { useEffect } from 'react'
 
-const RenderBox = ({children}: {children: React.ReactNode}) => {
+const RenderBox = ({children, logout}: {children: React.ReactNode,logout: ()=>void}) => {
 
   return (
     <div className='w-full h-screen p-16 bg-gray-100'>
       <div className='w-4/5 m-auto rounded-lg block bg-white p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700'>
           {children}
           <Link href='/'>
-              <Button  className='my-6'>
+              <Button  className='my-6' onClick={logout}>
                   Back to Home
               </Button>
           </Link>
@@ -33,16 +33,16 @@ const Page = ({params}:any) => {
 
     useEffect(()=>{
       const getInfo = async () => {
-        await axios.get(`/api/transaction?session_id=${session_id}&user_id=${user?.id}`);
-        logout();
+        axios.get(`/api/transaction?session_id=${session_id}&user_id=${user?.id}`);
       }
-      if(user)
-      getInfo();
+      if(user?.id){
+        getInfo();
+      }
     },[user]);
 
 
     return (
-      <RenderBox>
+      <RenderBox logout={logout}>
         <h3 className='text-xl text-bold text-green-600 mb-2'>Transaction Successful.</h3>
         <h5>Processing may take a while, your account will be updated soon.</h5>
       </RenderBox>
@@ -51,7 +51,7 @@ const Page = ({params}:any) => {
   }
   catch(err){
     return (
-      <RenderBox>
+      <RenderBox logout={logout}>
         <h3 className='text-xl text-bold text-red-600 mb-2'>Invalid Transaction.</h3>
         <h5>There was somethig wrong with the transaction</h5>
       </RenderBox>
