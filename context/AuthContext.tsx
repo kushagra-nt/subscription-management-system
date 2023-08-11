@@ -59,6 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 try{
                     const res:any = await axios.get(`/api/user?userEmail=${user.email}`);
                     setUser(res.data.user);
+                    localStorage.setItem('user', JSON.stringify(res.data.user));
                 }
                 catch(err){
                     toast.error('Error fetching user subscription plan',{

@@ -6,6 +6,7 @@ import axios from "axios";
 import {toast} from 'react-hot-toast';
 import toastStyle from "@/utils/toastStyle";
 import { Plan } from "@/constants/types";
+import { useAuth } from "./AuthContext";
 
 type PlansContextData = {
     plans: Plan[] | null,
@@ -20,6 +21,9 @@ type PlansProviderProps = {
 const PlansContext = createContext<PlansContextData | undefined>(undefined);
 
 export const PlansProvider = ({ children }: PlansProviderProps) => {
+
+    const {updateSubsriptionPlan} = useAuth();
+
     const [plans, setPlans] = useState<Plan[] | null>(null);
     const [isCancelling, setIsCancelling] = useState(false);
 
@@ -36,6 +40,7 @@ export const PlansProvider = ({ children }: PlansProviderProps) => {
         setIsCancelling(true);
         try{
             await axios.post('/api/cancel', {userId});
+            updateSubsriptionPlan();
         }
         catch(err){
             toast.error('failed to cancel subscription', {
