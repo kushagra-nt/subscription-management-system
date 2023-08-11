@@ -33,6 +33,7 @@ export const POST = async(req: NextRequest) => {
         return NextResponse.json({status: 200, message: "Subscription Cancelled"});
     }
     catch(err){
+        console.log(err);
         return NextResponse.json({status: 500, message: "Internal Server Error"});
     }
 

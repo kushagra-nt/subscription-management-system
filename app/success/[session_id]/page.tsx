@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const RenderBox = ({children}: {children: React.ReactNode}) => {
 
@@ -31,11 +31,15 @@ const Page = ({params}:any) => {
       throw new Error('Invalid Session ID')
     }
 
-    const getInfo = async () => {
-      await axios.get(`/api/transaction?session_id=${session_id}&user_id=${user?.id}`);
-      logout();
-    }
-    getInfo();
+    useEffect(()=>{
+      const getInfo = async () => {
+        await axios.get(`/api/transaction?session_id=${session_id}&user_id=${user?.id}`);
+        logout();
+      }
+      if(user)
+      getInfo();
+    },[user]);
+
 
     return (
       <RenderBox>

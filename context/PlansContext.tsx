@@ -2,7 +2,6 @@
 
 import { ReactNode, createContext, useEffect, useState } from "react";
 import React from "react";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import {toast} from 'react-hot-toast';
 import toastStyle from "@/utils/toastStyle";
@@ -35,7 +34,14 @@ export const PlansProvider = ({ children }: PlansProviderProps) => {
 
     const cancelSubscription = async (userId:string) => {
         setIsCancelling(true);
-        await axios.post('/api/cancel', {userId});
+        try{
+            await axios.post('/api/cancel', {userId});
+        }
+        catch(err){
+            toast.error('failed to cancel subscription', {
+                style: toastStyle,
+            });
+        }
         setIsCancelling(false);
     }
 
