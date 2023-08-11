@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  userName            String
+  email               String   @unique
+  password            String
+  subscriptionPlan    String
+  subscribedAt        DateTime
+  subscriptionEndsAt  DateTime
+  stripeSubscriptionId String?
+}
+
+model Logs{
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  email          String
+  logMessage     String
+  timestamp      DateTime
+}
+
+model Plan{
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String   @unique
+  monthlyPrice    Int
+  yearlyPrice     Int
+  videoQuality    String
+  resolution      String
+  devices         String[]
+  stripeMonthlyId String
+  stripeYearlyId  String
+}
