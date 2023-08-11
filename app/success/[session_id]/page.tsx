@@ -1,9 +1,11 @@
 "use client";
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/context/AuthContext';
+import toastStyle from '@/utils/toastStyle';
 import axios from 'axios';
 import Link from 'next/link'
 import React, { useEffect } from 'react'
+import { toast } from 'react-hot-toast';
 
 const RenderBox = ({children, logout}: {children: React.ReactNode,logout: ()=>void}) => {
 
@@ -24,23 +26,30 @@ const RenderBox = ({children, logout}: {children: React.ReactNode,logout: ()=>vo
 const Page = ({params}:any) => {
 
   const session_id = params.session_id;
-  const {user, logout} = useAuth();
+  const { logout} = useAuth();
 
   try{
     if(!session_id){
       throw new Error('Invalid Session ID')
     }
 
-    useEffect(()=>{
-      const getInfo = async () => {
-        await axios.get(`/api/transaction?session_id=${session_id}&user_id=${user?.id}`);
-        logout();
-      }
-      if(user?.id){
-        getInfo();
-      }
-    },[user]);
+    const getInfo = async () => {
+      var userData:any = localStorage.getItem('user');
+      userData = JSON.parse(userData);
 
+      if(userData?.id){
+        await axios.get(`/api/transaction?session_id=${session_id}&user_id=${userData.id}`);
+        setTimeout(()=> {
+          logout();
+        },5000);
+      }
+      else{
+        toast('Invalid User', {
+          style: toastStyle
+        });
+      }
+    }
+    getInfo();
 
     return (
       <RenderBox logout={logout}>
