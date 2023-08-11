@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     useEffect(() => {
         const fetchUser = async () => {
+        // Perform localStorage action
         const storedUser = localStorage.getItem('user');
           // If there is stored user data, update our state with it
 
@@ -59,6 +60,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 try{
                     const res:any = await axios.get(`/api/user?userEmail=${user.email}`);
                     setUser(res.data.user);
+                    // Perform localStorage action
                     localStorage.setItem('user', JSON.stringify(res.data.user));
                 }
                 catch(err){

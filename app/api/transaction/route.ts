@@ -24,7 +24,7 @@ export const GET = async(req: NextRequest) => {
 
         const plan = await prisma.plan.findFirst({
             where: {
-                id: session.metadata.id
+                name: session.payment_settings.payment_method_options.card.mandate_options.description
             }
         })
 
