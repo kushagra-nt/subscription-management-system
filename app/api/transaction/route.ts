@@ -9,7 +9,13 @@ export const GET = async(req: NextRequest) => {
         
         if(!sessionId || !userId) return NextResponse.json({status: 400, message: "Bad Request"})
         
-        const response = await axios.get(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`,{
+        const temp:any = await axios.get(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`,{
+            headers: {
+                Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`
+            }
+        })
+
+        const response = await axios.get(`https://api.stripe.com/v1/subscriptions/${temp.data.subscription}`,{
             headers: {
                 Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`
             }
@@ -18,19 +24,12 @@ export const GET = async(req: NextRequest) => {
 
         const plan = await prisma.plan.findFirst({
             where: {
-                OR: [
-                    {
-                    monthlyPrice: session.amount_total
-                    },
-                    {
-                        yearlyPrice: session.amount_total
-                    }
-                ]
+                id: session.metadata.id
             }
         })
 
         const endDate = new Date();
-        if(plan?.monthlyPrice===session.amount_total) endDate.setMonth(endDate.getMonth()+1)
+        if(session.items.data[0].price.recurring.interval==='month') endDate.setMonth(endDate.getMonth()+1)
         else endDate.setFullYear(endDate.getFullYear()+1)
 
         const user = await prisma.user.update({
@@ -41,7 +40,7 @@ export const GET = async(req: NextRequest) => {
                 subscriptionPlan: plan?.name,
                 subscribedAt: new Date(),
                 subscriptionEndsAt: endDate,
-                stripeSubscriptionId: session.subscription
+                stripeSubscriptionId: session.id
             }
         })
 
@@ -55,8 +54,8 @@ export const GET = async(req: NextRequest) => {
 
         return NextResponse.json(session,{status:200});
     }
-    catch(err){
-        console.log(err);
+    catch(err:any){
+        console.log(err.response.data);
         return NextResponse.json({status: 500, message: "Internal Server Error"});
     }
 }

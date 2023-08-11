@@ -30,9 +30,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [updateUserPlan, setUpdateUserPlan] = useState<boolean>(false);
     const router = useRouter();
 
+
     useEffect(() => {
         const fetchUser = async () => {
-        const storedUser = sessionStorage.getItem('user');
+        const storedUser = localStorage.getItem('user');
           // If there is stored user data, update our state with it
 
           if (storedUser) {
@@ -93,7 +94,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             })
 
             setUser(response.data.user);
-            sessionStorage.setItem('user', JSON.stringify(response.data.user));
+            localStorage.setItem('user', JSON.stringify(response.data.user));
             setIsLoading(false);
             router.push("/");
         }
@@ -108,7 +109,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const logout = ()=>{
         setUser(null);
-        sessionStorage.removeItem('user');
+        console.log('here');
+        localStorage.removeItem('user');
         // toast.success("Logged Out Successfully!", { style: toastStyle });
         router.push("/login");
     }

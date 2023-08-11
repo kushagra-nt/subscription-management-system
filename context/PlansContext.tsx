@@ -10,7 +10,7 @@ import { Plan } from "@/constants/types";
 type PlansContextData = {
     plans: Plan[] | null,
     cancelSubscription: (userId:string) => void,
-    isCancelling: boolean
+    isCancelling: boolean,
 }
 
 type PlansProviderProps = {
